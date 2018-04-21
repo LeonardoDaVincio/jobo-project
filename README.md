@@ -1,3 +1,3 @@
 # jobo-project
-Homemade Job CPE style color processor
+Homemade Jobo CPE style color processor
 
