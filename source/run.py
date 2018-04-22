@@ -56,24 +56,47 @@ def heater_on(value):
         HEATER_ON = value
         if value:
             # turn heater on
+            pass
         else:
             # turn heater off
+            pass
 
 
-def check_temperature_worker():
+
+class TemperatureWorker (Thread):
     """
-    Worker that continuously checks the temperature
-    :return: nothing
+    Worker class that continuously checks the temperature
     """
-    temp_array = array('f', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-    while 1:
-        temp_array.push(get_temperature())
-        water_temp = sum(temp_array) / len(temp_array)
+    def __init__(self):
+        """
+        Initialises empty temperature array and flag
+        """
+        threading.Thread.__init__(self)
+        self.temp_array = array('f', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        self.flag = True
 
-        if TEMPERATURE - water_temp > 0:  # because heater maybe still emits heat after being turned off
-            heater_on(False)
-        elif (TEMPERATURE - water_temp) * -1 > TOLERANCE:
-            heater_on(True)
+    def run(self):
+        """
+        Corrects water temperature by checking the thermometer
+        :return: nothing
+        """
+        global TEMPERATURE
+        self.flag = True
+        while self.flag:
+            self.temp_array.push(get_temperature())
+            water_temp = sum(self.temp_array) / len(self.temp_array)
+
+            if TEMPERATURE - water_temp > 0:  # because heater maybe still emits heat after being turned off
+                heater_on(False)
+            elif (TEMPERATURE - water_temp) * -1 > TOLERANCE:
+                heater_on(True)
+
+    def stop(self):
+        """
+        Stops the thread
+        :return: nothing
+        """
+        self.flag = False
 
 
 
@@ -133,10 +156,12 @@ def motor_speed(value):
         # set motor speed
 
 
-temperature_worker = Thread(target=check_temperature_worker, args=())
+temperature_worker = TemperatureWorker()
 temperature_worker.start()
 
 motor_worker = MotorWorker()
+
+
 
 while 1:
     delta = encoder.get_delta()
