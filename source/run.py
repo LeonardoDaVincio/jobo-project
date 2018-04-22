@@ -1,5 +1,7 @@
 from array import array
 from threading import Thread
+import time
+import threading
 
 import gaugette.rotary_encoder
 import gaugette.switch
@@ -12,7 +14,8 @@ TEMPERATURE = 38
 TOLERANCE = 0.2  # Wikipedia says 0.3
 HEATER_ON = False
 LAST_SWITCH_STATE = 0
-MOTOR_ON = False
+MOTOR_SPEED = 0
+MOTOR_SECONDS = 5
 
 encoder = gaugette.rotary_encoder.RotaryEncoder.Worker(A_PIN, B_PIN)
 encoder.start()
@@ -73,25 +76,67 @@ def check_temperature_worker():
             heater_on(True)
 
 
-def motor_on(value):
+
+class MotorWorker (Thread):
     """
-    Turns motor on or off
-    :param value: True for motor on, False for motor off
+    Motor worker class that manages motor direction and turning
+    """
+    def __init__(self):
+        """
+        Init that sets flag, timestamp and direction
+        """
+        threading.Thread.__init__(self)
+        self.flag = True
+        self.timestamp = time.clock()
+        self.direction = 1
+
+    def run(self):
+        """
+        Execution on thread start
+        :return: nothing
+        """
+        self.flag = True
+        global MOTOR_SPEED, MOTOR_SECONDS
+        self.timestamp = time.clock()
+        while self.flag:
+            if time.clock() - self.timestamp > 5:
+                self.timestamp = time.clock()
+                self.direction = self.direction * -1
+
+            motor_speed(MOTOR_SPEED * self.direction)
+
+
+    def stop(self):
+        """
+        Stops the thread
+        :return: nothing
+        """
+        self.flag = False
+
+
+def motor_speed(value):
+    """
+    Changes motor speed
+    :param value: -128/128 for maximum speed in either direction. 0 for off.
     :return:
     """
-    global MOTOR_ON
-    if MOTOR_ON is value:
+    global MOTOR_SPEED
+    if MOTOR_SPEED is value:
         pass
     else:
-        MOTOR_ON = value
-        if value:
-            # turn motor on
-        else:
-            # turn motor of
+        if value > 128:
+            MOTOR_SPEED = 128
+        elif value < -128:
+            MOTOR_SPEED = -128
+        else
+            MOTOR_SPEED = value
+        # set motor speed
 
 
 temperature_worker = Thread(target=check_temperature_worker, args=())
 temperature_worker.start()
+
+motor_worker = MotorWorker()
 
 while 1:
     delta = encoder.get_delta()
@@ -101,10 +146,10 @@ while 1:
     sw_state = switch.get_state()
     if sw_state != LAST_SWITCH_STATE:
         LAST_SWITCH_STATE = sw_state
-        if LAST_SWITCH_STATE and MOTOR_ON:
-            motor_on(False)
-        elif LAST_SWITCH_STATE and not MOTOR_ON:
-            motor_on(True)
+        if LAST_SWITCH_STATE and motor_worker.is_alive():
+            motor_worker.stop()
+        elif LAST_SWITCH_STATE and not motor_worker.is_alive():
+            motor_worker.run()
 
     # show temperature on display (current and desired)
     # show timer on display after start is pressed
