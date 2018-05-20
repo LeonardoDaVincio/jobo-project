@@ -96,13 +96,14 @@ class MenuViewModel(ViewModel):
         self.selectedMenuItem = 0
 
     def next(self):
-        self.selectedMenuItem = (self.selectedMenuItem + 1) % len(self.menuItems)
+        self.selectedMenuItem += 1 
+        self.selectedMenuItem %= len(self.menuItems)
 
     def prev(self):
-        if (selectedMenuItem == 0):
-            selectedMenuItem = len(self.menuItems) - 1
+        if (self.selectedMenuItem == 0):
+            self.selectedMenuItem = len(self.menuItems) - 1
         else:
-            selectedMenuItem -= 1
+            self.selectedMenuItem -= 1
 
     # currently maximum 5 entries, because of display limitation
     # TODO Scrolling View
