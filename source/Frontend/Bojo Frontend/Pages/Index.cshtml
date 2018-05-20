@@ -1,0 +1,85 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Temperatures";
+}
+
+<div class="row">
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+    <canvas id="chartjsGraph" width="400" height="400"></canvas>
+
+    <script>
+
+        function chartjsGraph(data) {
+            var ctx = document.getElementById("chartjsGraph").getContext('2d');
+            var options = {};
+            var datasets = [];
+            for (var i = 0; i < data.names.length; i++) {
+                datasets.push({
+                    label: data.names[i],
+                    backgroundColor: data.names[i] == 'Set' ? ['rgba(227,7,19, 0.2)'] :['rgba(63, 81, 181, 0.2)'],
+                    data: data.temps[i]
+                });
+            }
+
+            var myLineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.dates,
+                    datasets: datasets
+                },
+                options: {
+                    elements: {
+                        point: { radius: 0 }
+                    },
+                    maintainAspectRatio: false,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                // Include a dollar sign in the ticks
+                                callback: function (value, index, values) {
+                                    return value + '°C';
+                                }
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+
+        function refresh() {
+            $.get(window.location.origin + "/api/temperature").done(function (data) {
+                var dates = [];
+                var temps = [];
+                var tempSensorNames = [];
+                var formattedDates = [];
+                //Add names
+                for (var key in data[0].temps) {
+                    tempSensorNames.push(key);
+                    temps.push([]);
+                }
+                //add temps
+                for (var i = data.length - 1; i >= 0; i--) { //iterate tempcollection
+                    dates.push(data[i].time);
+                    var j = 0;
+                    for (var key in data[i].temps) { //iterate temperatures
+                        temps[j].push(data[i].temps[key]);
+                        j++;
+                    }
+                    formattedDates.push(new Date(data[i].time).toLocaleTimeString('de-DE'));
+                }
+
+                var chartjsData = { names: tempSensorNames, dates: formattedDates, temps: temps };
+
+                chartjsGraph(chartjsData);
+            });
+
+        }
+        $(document).ready(function () {
+            setInterval(refresh(), 10000);
+        });
+    </script>
+
+</div>
