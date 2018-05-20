@@ -3,8 +3,9 @@ Homemade Jobo CPE style color processor
 
 Uses an 128x64 Pixel OLED Display
 
-Beta Images:
+## Beta Images
+![Display1](https://raw.githubusercontent.com/LeonardoDaVincio/jobo-project/master/images/StatusDisplay.bmp "Display1") Regular Display View
 
-Regular Display View ![Display1](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Display1")
+![Display2](https://raw.githubusercontent.com/LeonardoDaVincio/jobo-project/master/images/SetTemperature.bmp "Display2") Set Temperature View (when turning the Rotary Encoder)
 
-Setting Temperature View (When Turning the Rotary Encoder) ![Display1](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Display1")
+![Display3](https://raw.githubusercontent.com/LeonardoDaVincio/jobo-project/master/images/Menu.bmp "Display3") Menu View (when pushing the Rotary Encoder)
