@@ -1,15 +1,29 @@
 from PIL import Image, ImageDraw, ImageFont
+import operator
+
 class StatusViewModel:
     #isTemperatures: array of float
     #setTemperature: float
     #agitation: string
     #time: string
-    def __init__(self, isTemperatures, setTemperature, agitation, time):
+    def __init__(self, isTemperatures = [0], setTemperature = 0, agitation = "unknown", time = "00:00"):
         self.isTemperatures = isTemperatures
         self.setTemperature = setTemperature
         self.agitation = agitation
         self.time = time
-
+        
+    # writes black text on white background
+    # useful for menus
+    def drawInversedText(self, draw, xy, text, font):
+        size = font.getsize(text)
+        tillxy = tuple(map(operator.add, xy, size))
+        rectanglesize = [xy, tillxy]
+        # create white rectangle
+        draw.rectangle(rectanglesize, fill="white", outline="white")
+        # put black text on top
+        draw.text(xy, text, font=font, fill="black")
+        
+        
     def generateStatusDisplay(self):
         im = Image.new("1",(128,64),0)
 
@@ -18,7 +32,8 @@ class StatusViewModel:
         row = 2
         col = 2
         #Idea: 2px space at top and left
-        draw.text((col,row), "BoJo", font=fnt, fill="white")
+        #draw.text((col,row), "BoJo", font=fnt, fill="white")
+        self.drawInversedText(draw, (col,row), "BoJo", fnt)
         row += 12
         #foreach isTemperature -> display
         tempString = "Temp: "
@@ -38,12 +53,3 @@ class StatusViewModel:
         del draw
         del fnt
         return im
-
-# demo um es zu callen
-#wie gesagt, hässlich, da nie in python garbeitet :D
-# create viewmodel
-vm = StatusViewModel([23.84658, 76.92383857], 30, "5s-6s", "03:45")
-# create view (image) out of viewmodel
-im = vm.generateStatusDisplay()
-# display picture in picture viewer
-im.show();
