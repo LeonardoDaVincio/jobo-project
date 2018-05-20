@@ -1,4 +1,4 @@
-from ViewModel import StatusViewModel
+from ViewModel import StatusViewModel, SetTemperatureViewModel, MenuViewModel
 
 
 # demo um es zu callen
@@ -6,7 +6,7 @@ from ViewModel import StatusViewModel
 # create viewmodel
 vm = StatusViewModel([23.84658, 76.92383857], 30, "5s-6s", "03:45")
 # create view (image) out of viewmodel
-im = vm.generateStatusDisplay()
+im = vm.generateView()
 # display picture in picture viewer
 im.show();
 
@@ -14,5 +14,23 @@ im.show();
 # everything zero
 
 vm2 = StatusViewModel(agitation = "8s-8s")
-im2 = vm2.generateStatusDisplay()
+im2 = vm2.generateView()
 im2.show()
+
+# Temperature ViewModel (intended when turning knob)
+vm3 = SetTemperatureViewModel()
+vm3.increase()
+vm3.increase()
+vm3.increase()
+im3 = vm3.generateView()
+im3.show()
+
+items = ["Start", "Set Agitation", "Set Temperature"]
+vm4 = MenuViewModel(items)
+vm4.next()
+im4 = vm4.generateView()
+im4.show()
+
+im.save("StatusDisplay.bmp")
+im3.save("SetTemperature.bmp")
+im4.save("Menu.bmp")
