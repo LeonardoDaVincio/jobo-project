@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from PIL import Image, ImageDraw, ImageFont
 import operator
 class ViewModel:
@@ -83,7 +82,7 @@ class SetTemperatureViewModel(ViewModel):
         # 18 Pixels Space
         row += 18
         #Draw cropped temperature
-        temp = "{:.2f}".format(self.setTemperature) + chr(176) + "C"
+        temp = "{:.2f}".format(self.setTemperature) + "°C"
         draw.text(((self.SIZE[0]-bigfnt.getsize(temp)[0])/2, row), temp, font=bigfnt, fill="white")
 
         del draw

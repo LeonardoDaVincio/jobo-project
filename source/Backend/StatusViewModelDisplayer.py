@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from ViewModel import StatusViewModel, SetTemperatureViewModel, MenuViewModel
 
 
@@ -32,6 +31,6 @@ vm4.next()
 im4 = vm4.generateView()
 im4.show()
 
-im.save("StatusDisplay.bmp")
-im3.save("SetTemperature.bmp")
-im4.save("Menu.bmp")
+#im.save("StatusDisplay.bmp")
+#im3.save("SetTemperature.bmp")
+#im4.save("Menu.bmp")
