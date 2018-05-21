@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ViewModel import StatusViewModel, SetTemperatureViewModel, MenuViewModel
 
 
